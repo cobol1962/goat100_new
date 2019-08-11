@@ -11,13 +11,14 @@ setTimeout(function() {
   };
   firebase.initializeApp(config);
 }, 5000);
+
 $(document).ready(function(){
 
-    $('.modal').modal();
+  $('.modal').modal();
 	if (localStorage["user"] !== undefined) {
 		loginUser($.parseJSON(localStorage["user"]));
 	}
-	 startAvatar();
+  startAvatar();
 
 });
   // Initialize Firebase

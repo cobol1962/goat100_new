@@ -26,5 +26,5 @@
 <script src="/js/galleryExpand.js"></script>
 <script src="/js/init.js?v=<?=time()?>"></script>
 <script type="text/javascript">
-  
+
 </script>

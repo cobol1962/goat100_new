@@ -28,6 +28,7 @@
  <!--<script type="text/javascript" src="http://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-colvis-1.5.1/b-flash-1.5.1/b-html5-1.5.1/b-print-1.5.1/cr-1.4.1/fc-3.2.4/fh-3.1.3/sc-1.4.4/sl-1.2.5/datatables.min.js"></script>-->
  <script src="js/croppie.js"></script>
  <script src="js/base64.js"></script>
+
  <script src="http://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
  <script src="js/imagesloaded.pkgd.min.js"></script>
  <script src="js/masonry.pkgd.min.js"></script>
@@ -331,12 +332,33 @@
   </body>
   <script type="text/javascript">
 var $masonry = null;
+function locationHashChanged() {
+  art = window.location.hash.substring(1);
+
+  if (art != "") {
+    setTimeout(function() {
+      $("[artsearch='" + art + "']").trigger("click");
+      var ww = setInterval(function() {
+        if ($(".back-btn").length > 0) {
+          clearInterval(ww);
+          $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
+
+        }
+      }, 100)
+    }, 1500)
+  } else {
+    $(".back-btn").trigger("click");
+  }
+}
+
+window.onhashchange = locationHashChanged;
 $(document).ready(function() {
   var t = (new Date()).getTime();
 
   $.getScript("/js/mainScript.js?v=" + t, function() {  });
   $.getScript("/js/firebaseHandler.js?v=" + t, function() {});
   $.getScript("/js/init.js?v=" + t, function() {});
+
   var ww = setInterval(function() {
 
     if ($("#disqus_thread").length > 0) {
@@ -344,12 +366,16 @@ $(document).ready(function() {
       $("#disqus_thread").hide();
     }
   }, 100);
+
   (function() { // DON'T EDIT BELOW THIS LINE
     var d = document, s = d.createElement('script');
     s.src = 'https://goat100.disqus.com/embed.js';
     s.setAttribute('data-timestamp', +new Date());
     (d.head || d.body).appendChild(s);
   })();
+  var art = "";
+  art = window.location.hash.substring(1);
+
 
   $.ajax({
     url: "/ajax/getRecords.php",
@@ -382,13 +408,26 @@ $(document).ready(function() {
 
   });
   setTimeout(function() {
+        $.each($(".gallery-cover"), function() {
+          $(this).attr("artsearch", $(this).closest(".gallery-item").attr("artsearch_m"));
+        });
         $(".gallery-cover").bind("click", function(e) {
+          var ww = setInterval(function() {
+            if ($(".back-btn").length > 0) {
+              clearInterval(ww);
+              $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
 
+            }
+          }, 100)
           var $el = $(this).closest(".gallery-item").find(".gallery-body").find(".btn-floating.btn-large.waves-effect.waves-light");
           $el.html($(this).closest(".gallery-item").attr("order"));
           var cid = $(this).closest(".gallery-item").attr("cardid");
           var $act = $(this).closest(".gallery-item").find(".gallery-action");
+          var stateObj = { foo: "bar" };
+
           var artName = $(this).closest(".gallery-item").attr("artName");
+
+          history.pushState(stateObj, artName,"#" + $(this).closest(".gallery-item").attr("artsearch_m"));
           $act.find("a").eq(0).unbind("click");
           $act.find("a").eq(1).unbind("click");
           $act.find("a").eq(0).bind("click", function() {
@@ -417,6 +456,20 @@ $(document).ready(function() {
             }, 1000);
 
         });
+        if (art != "") {
+          setTimeout(function() {
+            $("[artsearch='" + art + "']").trigger("click");
+            var ww = setInterval(function() {
+              if ($(".back-btn").length > 0) {
+                clearInterval(ww);
+                $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
+
+              }
+            }, 100)
+          }, 1500)
+        } else {
+          history.pushState({}, "goat100", "");
+        }
       }, 2000);
 });
 	function showCat(obj) {
@@ -449,4 +502,5 @@ $(document).ready(function() {
   <script src="http://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
   <script src="js/color-thief.min.js"></script>
   <script src="js/galleryExpand.js"></script>
+
 </html>
