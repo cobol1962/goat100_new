@@ -1,0 +1,24 @@
+Hi. This is report:
+
+- Admin panel is done : /admin.php
+username asdrfGHyuiJKL
+password xxCVGwerfbddd
+
+You will see - is simple to use. Sorry, css is not brushed yet.
+You have votes given by clients (is NOY done yet) and admin votes - is operational.
+On index page (index.php) is sorted descending by votes + admin votes.
+
+You can upload images. For accolades, Best Known and about editor is implemented. Very basic,
+but if you wish is easy to add colors, fonts and all from CKEDITOR
+
+All is reflected on index page.
+
+I am going on short vacation. Probably will be online Wendsday. Be back home ~ June 1.
+But for short changes and corrections i will be available (hopefully).
+
+Voting we will do when come back
+
+all about user registration and profile is also done.
+
+Greetings!
+Nenad
