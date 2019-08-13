@@ -1,5 +1,3 @@
-delete localStorage.user;
-alert(localStorage.user);
 setTimeout(function() {
   var config = {
     apiKey: "AIzaSyCDW6qVaRS0TwHtu87lSWS8e-7rrs9Xf4Q",
@@ -540,9 +538,71 @@ function resetPassword() {
 	});
 }
 function vote(what, cardid, artName, addVote) {
+
   if (localStorage.user === undefined) {
     askRegister();
+
   }
+  var user = $.parseJSON(localStorage["user"]);
+
+  $.ajax({
+   url: "/ajax/checkLastVote.php",
+   type: "POST",
+   data: {
+     artistid: cardid,
+     userid: user.id
+   },
+   success: function(res) {
+     if (res == "999999999") {
+       goVote(what, cardid, artName, addVote, user.id);
+     } else  {
+
+       var next = (parseInt(res) + 86400) * 1000;
+       if ((new Date().getTime()) > next) {
+         goVote(what, cardid, artName, addVote, user.id);
+       } else {
+
+         swal({
+           type: "error",
+           text: "Next like / unlike for " + artName + " is possible " + (new Date(next))
+         });
+       }
+     }
+   },
+    error: function (request, status, error) {
+        alert(request.responseText);
+    }
+ });
+}
+function goVote(what, cardid, artName, addVote, userid) {
+
+  $.ajax({
+    url: "/ajax/addVote.php",
+    type: "POST",
+    data: {
+      userid: userid,
+      artistid: cardid,
+      vote: addVote,
+      time_vote: parseInt(((new Date()).getTime()) / 1000)
+    },
+    success: function(res) {
+      $.ajax({
+        url: "/ajax/updateCardVotes.php",
+        type: "POST",
+        data: {
+          vote: addVote,
+          cardid: cardid
+        },
+        success: function() {
+          swal({
+            type: "success",
+            title: "Thank you",
+            html: "<h5>You succesfully <b>" + ((addVote == 1) ? "Liked" : "Unliked") + "</b> " + artName + "</h5>"
+          })
+        }
+      });
+    }
+  })
 }
 function askRegister() {
   swal({

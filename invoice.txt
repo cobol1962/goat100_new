@@ -1,0 +1,18 @@
+Invoicing of future an already done jobs:
+
+- Recover app after down                           - DONE         - $50
+- Make iframes dynamic loading                     - TODO         - $30
+- Friendly URL'S goat100.com/#artist_name          - DONE         - $50
+- Share individual artist page on social networks  - TODO         - $50
+- Voting system                                    - TODO         already paid
+- Make chat system - simplified no personal rooms 
+  every artist - own room                          - TODO         - $150
+- Connect FB page with app - allow posting...      - TODO         - $100
+  allow posting from chat...
+- DISQUS - make own blog i am thinking is better   - TODO         - $150  
+  but REAL blog - themes etc....(who is best...)
+- SEO optimization - make all things searchable 
+	on web                                         - TODO         - $100
+																_________
+																     $680 - $200 paid = $480
+ 

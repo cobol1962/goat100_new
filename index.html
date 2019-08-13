@@ -382,7 +382,37 @@ $(document).ready(function() {
     type: "POST",
     async: false,
     success: function(res) {
-        $("#rows").html(res);
+      var $el = $(res);
+      var elms = res.split("<!--endartist-->");
+
+      $.each(elms, function() {
+        if (this != "") {
+          var dv = document.createElement("DIV");
+          dv.innerHTML = this;
+          var ths = this;
+          $.each($(dv).find("iframe"), function() {
+            var toAdd = this.outerHTML;
+            if ($(this).attr("src").indexOf("apple") > -1) {
+              var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+                $(lis[2]).one("click", function() {
+                  $(toAdd).appendTo($(this).find(".collapsible-body"));
+                });
+            }
+
+            if ($(this).attr("src").indexOf("spotify") > -1) {
+                var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+                $(lis[1]).one("click", function() {
+                  $(toAdd).appendTo($(this).find(".collapsible-body"));
+                });
+            }
+          })
+          $(dv).find("iframe").remove();
+          document.getElementById("rows").appendChild(dv);
+
+        }
+      });
+    //  $el.appendTo("#rows");
+      //  $("#rows").html(res);
     }
   })
   setTimeout(function() {
@@ -393,14 +423,6 @@ $(document).ready(function() {
   }, 1000);
 
   $masonry = $('.gallery');
-  $masonry.masonry({
-    // set itemSelector so .grid-sizer is not used in layout
-    itemSelector: '.gallery-item',
-    // use element for option
-    columnWidth: '.gallery-item',
-    // no transitions
-    transitionDuration: 0
-  });
 
 // layout Masonry after each image loads
   $masonry.imagesLoaded(function() {

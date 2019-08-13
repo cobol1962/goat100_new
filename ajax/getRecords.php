@@ -1,7 +1,7 @@
 <?php
 	include($_SERVER["DOCUMENT_ROOT"] . "/include/database.php");
   $i = 0;
-  $qvr = "SELECT `id`, `category`, `name`, `html`, `LitRank`, `OverallVotes` FROM `cards` order by (`OverallVotes` + `LitRank`) DESC";
+  $qvr = "SELECT `id`, `category`, `name`, `html`, `LitRank`, `OverallVotes` FROM `cards` order by (`OverallVotes`) DESC";
   $rez = $mysqli->query($qvr);
   $i = 1;
   $rz = "";
@@ -11,7 +11,7 @@
             <div class='gallery-curve-wrapper' pageid='" . $row['name'] . "'>"
                     . $row["html"] . "
                   </div>
-            </div>";
+            </div><!--endartist-->";
       $i++;
     }
     echo $rz;
