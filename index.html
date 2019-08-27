@@ -6,6 +6,10 @@
     <meta name="description" content="">
 		<meta name="author" content="">
 		<title>GOAT 100 - Greatest Of All Time 100</title>
+
+<!-- facebook -->
+
+<!-- end facebook -->
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="theme-color" content="#ffffff">
 <link rel="stylesheet" href="css/bootstrap.css?v=<?=time()?>" type="text/css"/>
@@ -342,19 +346,22 @@ function locationHashChanged() {
         if ($(".back-btn").length > 0) {
           clearInterval(ww);
           $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
-
+          $("[facebook]").remove();
         }
       }, 100)
     }, 1500)
   } else {
     $(".back-btn").trigger("click");
+
+    $("[facebook]").remove();
   }
 }
 
 window.onhashchange = locationHashChanged;
+
 $(document).ready(function() {
   var t = (new Date()).getTime();
-
+  art = window.location.hash.substring(1);
   $.getScript("/js/mainScript.js?v=" + t, function() {  });
   $.getScript("/js/firebaseHandler.js?v=" + t, function() {});
   $.getScript("/js/init.js?v=" + t, function() {});
@@ -375,46 +382,7 @@ $(document).ready(function() {
   })();
   var art = "";
   art = window.location.hash.substring(1);
-
-
-  $.ajax({
-    url: "/ajax/getRecords.php",
-    type: "POST",
-    async: false,
-    success: function(res) {
-      var $el = $(res);
-      var elms = res.split("<!--endartist-->");
-
-      $.each(elms, function() {
-        if (this != "") {
-          var dv = document.createElement("DIV");
-          dv.innerHTML = this;
-          var ths = this;
-          $.each($(dv).find("iframe"), function() {
-            var toAdd = this.outerHTML;
-            if ($(this).attr("src").indexOf("apple") > -1) {
-              var lis = $(dv)[0].querySelectorAll(".collapsible > li");
-                $(lis[2]).one("click", function() {
-                  $(toAdd).appendTo($(this).find(".collapsible-body"));
-                });
-            }
-
-            if ($(this).attr("src").indexOf("spotify") > -1) {
-                var lis = $(dv)[0].querySelectorAll(".collapsible > li");
-                $(lis[1]).one("click", function() {
-                  $(toAdd).appendTo($(this).find(".collapsible-body"));
-                });
-            }
-          })
-          $(dv).find("iframe").remove();
-          document.getElementById("rows").appendChild(dv);
-
-        }
-      });
-    //  $el.appendTo("#rows");
-      //  $("#rows").html(res);
-    }
-  })
+  getRecords();
   setTimeout(function() {
     $.each($(".gallery-cover").find(".btn-floating.btn-large.waves-effect.waves-light").eq(0), function(ind) {
       this.innerHTML = ind + 1;
@@ -422,101 +390,162 @@ $(document).ready(function() {
 
   }, 1000);
 
-  $masonry = $('.gallery');
 
-// layout Masonry after each image loads
-  $masonry.imagesLoaded(function() {
-    $masonry.masonry('layout');
 
+});
+var cat = "all";
+var artists = null;
+function getRecords() {
+  if (artists == null) {
+      $.ajax({
+        url: "/ajax/getRecords.php",
+        type: "POST",
+        async: false,
+        success: function(res) {
+          artists = res;
+          draw();
+        }
+      })
+    } else {
+      draw();
+    }
+}
+function draw() {
+  $("#rows").html("");
+
+  var $el = $(artists);
+  var elms = artists.split("<!--endartist-->");
+
+  $.each(elms, function() {
+    if (this != "") {
+      var dv = document.createElement("DIV");
+      dv.innerHTML = this;
+
+      var ths = this;
+      $.each($(dv).find("iframe"), function() {
+        var toAdd = this.outerHTML;
+        if ($(this).attr("src").indexOf("apple") > -1) {
+          var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+            $(lis[2]).one("click", function() {
+              $(toAdd).appendTo($(this).find(".collapsible-body"));
+            });
+        }
+
+        if ($(this).attr("src").indexOf("spotify") > -1) {
+            var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+            $(lis[1]).one("click", function() {
+              $(toAdd).appendTo($(this).find(".collapsible-body"));
+            });
+        }
+      })
+      $(dv).find("iframe").remove();
+    //  document.getElementById("rows").appendChild(dv);
+        $(dv).find(".gallery-item").appendTo($("#rows"));
+    }
   });
+
+  var ww = setInterval(function() {
+    try {
+
+      initializeGallery(cat);
+      clearInterval(ww);
+    } catch(err) {
+
+    }
+    $masonry = $('.gallery');
+
+  // layout Masonry after each image loads
+    $masonry.imagesLoaded(function() {
+      $masonry.masonry('layout');
+
+    });
+  }, 3000)
   setTimeout(function() {
-        $.each($(".gallery-cover"), function() {
-          $(this).attr("artsearch", $(this).closest(".gallery-item").attr("artsearch_m"));
+      $.each($(".gallery-cover"), function() {
+        $(this).attr("artsearch", $(this).closest(".gallery-item").attr("artsearch_m"));
+      });
+      $(".gallery-cover").bind("click", function(e) {
+        var ww = setInterval(function() {
+          if ($(".back-btn").length > 0) {
+            clearInterval(ww);
+            $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');$('[facebook]').remove();");
+            $('title').text("GOAT100 - " + artName);
+          }
+        }, 100);
+
+        var $el = $(this).closest(".gallery-item").find(".gallery-body").find(".btn-floating.btn-large.waves-effect.waves-light");
+        $el.html($(this).closest(".gallery-item").attr("order"));
+        var cid = $(this).closest(".gallery-item").attr("cardid");
+        var $act = $(this).closest(".gallery-item").find(".gallery-action");
+        var stateObj = { foo: "bar" };
+        var artName = $(this).closest(".gallery-item").attr("artName");
+        history.pushState(stateObj, artName,"#" + $(this).closest(".gallery-item").attr("artsearch_m"));
+        $('title').text("GOAT100 - " + artName);
+        $act.find("a").eq(0).unbind("click");
+        $act.find("a").eq(1).unbind("click");
+        var ths = this;
+        var dsc = escape($(ths).closest(".gallery-item").find(".description").text());
+        var ttl =  artName;
+        if ($act.find("[facebook]").length == 0) {
+            $act.prepend("<a facebook style='cursor:pointer;'><img style='width:56px;' src='/images/facebook-share-icon.png' /></a>");
+            $act.find("a").eq(0).bind("click", function() {
+
+              FB.ui({
+                  method: 'share',
+                  href: "https://goat100.com/share.php?id=" + cid + "&artsearch=" + $(ths).closest(".gallery-item").attr("artsearch_m"),
+              }, function(response){});
+            });
+        }
+        $act.find("a").eq(1).bind("click", function() {
+          vote("Like", cid, artName, 1);
         });
-        $(".gallery-cover").bind("click", function(e) {
+        $act.find("a").eq(2).bind("click", function() {
+          vote("UnLike", cid, artName, -1)
+        });
+        $("div[id='disqus_thread']").remove();
+        var t = $(e.target);
+        $('title').text("GOAT100 - " + artName);
+        t.closest(".gallery-curve-wrapper").find("[target='disqus']").append("<div id='disqus_thread'></div>");
+        var pid = t.closest(".gallery-curve-wrapper").attr("pageid");
+
+        setTimeout(function() {
+            DISQUS.reset({
+                reload: true,
+                config: function () {
+                    this.page.identifier = pid;
+                    this.page.title = pid;
+                    this.page.url = "https://goat100.com/#!" + pid;
+                    this.language = "en";
+                }
+            });
+
+          }, 1000);
+
+      });
+      var art = window.location.hash.substring(1);
+      if (art != "") {
+        setTimeout(function() {
+          $("[artsearch='" + art + "']").trigger("click");
           var ww = setInterval(function() {
             if ($(".back-btn").length > 0) {
               clearInterval(ww);
-              $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
+              $(".back-btn").attr("onclick", " $('[facebook]').remove();history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');");
 
             }
           }, 100)
-          var $el = $(this).closest(".gallery-item").find(".gallery-body").find(".btn-floating.btn-large.waves-effect.waves-light");
-          $el.html($(this).closest(".gallery-item").attr("order"));
-          var cid = $(this).closest(".gallery-item").attr("cardid");
-          var $act = $(this).closest(".gallery-item").find(".gallery-action");
-          var stateObj = { foo: "bar" };
-
-          var artName = $(this).closest(".gallery-item").attr("artName");
-
-          history.pushState(stateObj, artName,"#" + $(this).closest(".gallery-item").attr("artsearch_m"));
-          $act.find("a").eq(0).unbind("click");
-          $act.find("a").eq(1).unbind("click");
-          $act.find("a").eq(0).bind("click", function() {
-            vote("Like", cid, artName, 1);
-          });
-          $act.find("a").eq(1).bind("click", function() {
-            vote("UnLike", cid, artName, -1)
-          });
-          $("div[id='disqus_thread']").remove();
-          var t = $(e.target);
-
-          t.closest(".gallery-curve-wrapper").find("[target='disqus']").append("<div id='disqus_thread'></div>");
-          var pid = t.closest(".gallery-curve-wrapper").attr("pageid");
-
-          setTimeout(function() {
-            DISQUS.reset({
-                  reload: true,
-                  config: function () {
-                      this.page.identifier = pid;
-                      this.page.title = pid;
-                      this.page.url = "https://goat100.com/#!" + pid;
-                      this.language = "en";
-                  }
-              });
-
-            }, 1000);
-
-        });
-        if (art != "") {
-          setTimeout(function() {
-            $("[artsearch='" + art + "']").trigger("click");
-            var ww = setInterval(function() {
-              if ($(".back-btn").length > 0) {
-                clearInterval(ww);
-                $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
-
-              }
-            }, 100)
-          }, 1500)
-        } else {
-          history.pushState({}, "goat100", "");
-        }
-      }, 2000);
-});
+        }, 1500)
+      } else {
+        history.pushState({}, "goat100", "");
+      }
+    }, 2000);
+//  $el.appendTo("#rows");
+  //  $("#rows").html(res);
+}
 	function showCat(obj) {
 //    $masonry = null;
-    var cat = $(obj).attr("c");
-    if (cat == "all") {
-			$("[category]").removeAttr("hidden");
-		} else {
-			$.each($("[category]"), function() {
-				var cc = $(this).attr("category").split(",");
-				var ss = cc.indexOf(cat);
-      	if (ss == -1) {
-          $(this).attr("hidden", "");
-				} else {
-					$(this).removeAttr("hidden");
-				}
-			});
+    cat = $(obj).attr("c");
+    initializeGallery(cat);
 
-
-		}
-
-    $masonry.masonry('layout');
-    $.each($("[order]:visible"), function(ind) {
-      $(this).attr("order", ind + 1);
-    });
 	}
 
   </script>
@@ -524,5 +553,15 @@ $(document).ready(function() {
   <script src="http://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
   <script src="js/color-thief.min.js"></script>
   <script src="js/galleryExpand.js"></script>
-
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : '192774091355244',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v4.0'
+      });
+    };
+  </script>
+  <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 </html>
