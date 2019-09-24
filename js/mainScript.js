@@ -384,8 +384,8 @@ function registerEmail() {
 }
 
 function loginUser(res) {
+
 	$("#loginModal").modal("close");
-	console.log(res);
 	localStorage["user"] = JSON.stringify(res);
 	$("[profile]").find("span").html(res.nick);
 	$("#inputNick").val(res.nick);
@@ -403,7 +403,6 @@ function loginUser(res) {
 		$("[email]").hide();
 	}
 	$("[profile]").show();
-	console.log(res);
 }
 function checkFBlogin(providerData) {
 
@@ -575,34 +574,41 @@ function vote(what, cardid, artName, addVote) {
  });
 }
 function goVote(what, cardid, artName, addVote, userid) {
-
-  $.ajax({
-    url: "/ajax/addVote.php",
-    type: "POST",
-    data: {
-      userid: userid,
-      artistid: cardid,
-      vote: addVote,
-      time_vote: parseInt(((new Date()).getTime()) / 1000)
-    },
-    success: function(res) {
-      $.ajax({
-        url: "/ajax/updateCardVotes.php",
-        type: "POST",
-        data: {
-          vote: addVote,
-          cardid: cardid
-        },
-        success: function() {
-          swal({
-            type: "success",
-            title: "Thank you",
-            html: "<h5>You succesfully <b>" + ((addVote == 1) ? "Liked" : "Unliked") + "</b> " + artName + "</h5>"
-          })
-        }
-      });
-    }
-  })
+  swal({
+    type: "question",
+    text: ((addVote == "1") ? "Like " : "Unlike ") + artName + "?",
+    showCancelButton: true
+  }).then((result) => {
+    if (result.value) {
+        $.ajax({
+          url: "/ajax/addVote.php",
+          type: "POST",
+          data: {
+            userid: userid,
+            artistid: cardid,
+            vote: addVote,
+            time_vote: parseInt(((new Date()).getTime()) / 1000)
+          },
+          success: function(res) {
+            $.ajax({
+              url: "/ajax/updateCardVotes.php",
+              type: "POST",
+              data: {
+                vote: addVote,
+                cardid: cardid
+              },
+              success: function() {
+                swal({
+                  type: "success",
+                  title: "Thank you",
+                  html: "<h5>You succesfully <b>" + ((addVote == 1) ? "Liked" : "Unliked") + "</b> " + artName + "</h5>"
+                })
+              }
+            });
+          }
+        })
+      }
+    });
 }
 function askRegister() {
   swal({

@@ -36,6 +36,8 @@
  <script src="http://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
  <script src="js/imagesloaded.pkgd.min.js"></script>
  <script src="js/masonry.pkgd.min.js"></script>
+  <script src="js/socket.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
     <!-- Lato Font -->
 <style>
 	.demo-list-three {
@@ -65,8 +67,11 @@
 
 	@media only screen and (max-width: 992px){
 			.gallery .gallery-action {
-			right: -43px;
-		}
+		     right: -43px;
+	     }
+       .gallery .gallery-action img {
+         width: 34px;
+       }
 	}
 
 	.btn, .btn-large {
@@ -347,19 +352,25 @@ function locationHashChanged() {
           clearInterval(ww);
           $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
           $("[facebook]").remove();
+          $('[linkedin]').remove();
+          $('[twitter]').remove();
+          $("#chatDiv").hide();
         }
       }, 100)
     }, 1500)
   } else {
     $(".back-btn").trigger("click");
-
+    $("#chatDiv").hide();
     $("[facebook]").remove();
+    $('[linkedin]').remove();
+    $('[twitter]').remove();
   }
 }
 
 window.onhashchange = locationHashChanged;
 
 $(document).ready(function() {
+
   var t = (new Date()).getTime();
   art = window.location.hash.substring(1);
   $.getScript("/js/mainScript.js?v=" + t, function() {  });
@@ -461,18 +472,29 @@ function draw() {
     });
   }, 3000)
   setTimeout(function() {
+
       $.each($(".gallery-cover"), function() {
         $(this).attr("artsearch", $(this).closest(".gallery-item").attr("artsearch_m"));
+        $(this).attr("cardid", $(this).closest(".gallery-item").attr("cardid"));
       });
       $(".gallery-cover").bind("click", function(e) {
+        var u = $.parseJSON(localStorage.user);
+        var ws = new ReconnectingWebSocket(u.id, $(this).attr("cardid"));
         var ww = setInterval(function() {
           if ($(".back-btn").length > 0) {
             clearInterval(ww);
-            $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');$('[facebook]').remove();");
+            $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');$('#chatDiv').hide();$('[linkedin]').remove();$('[facebook]').remove();$('[twitter]').remove();");
             $('title').text("GOAT100 - " + artName);
           }
         }, 100);
-
+        setTimeout(function() {
+            if ($("#chatDiv").length == 0) {
+              $("[artsearch_m]").append("<div style='display:none;height:100vh;position:fixed;right:0px;width:250px;top:0px;border-left:2px solid black;z-index: 100000;' id='chatDiv'></div>");
+            }
+            setTimeout(function() {
+              $("#chatDiv").show();
+            }, 1000);
+        }, 200);
         var $el = $(this).closest(".gallery-item").find(".gallery-body").find(".btn-floating.btn-large.waves-effect.waves-light");
         $el.html($(this).closest(".gallery-item").attr("order"));
         var cid = $(this).closest(".gallery-item").attr("cardid");
@@ -487,19 +509,33 @@ function draw() {
         var dsc = escape($(ths).closest(".gallery-item").find(".description").text());
         var ttl =  artName;
         if ($act.find("[facebook]").length == 0) {
-            $act.prepend("<a facebook style='cursor:pointer;'><img style='width:56px;' src='/images/facebook-share-icon.png' /></a>");
-            $act.find("a").eq(0).bind("click", function() {
+          var url = "https://goat100.com/share.php?id=" + cid + "&artsearch=" + $(ths).closest(".gallery-item").attr("artsearch_m");
+          var title = "GOAT00 - " + $(ths).closest(".gallery-item").attr("artsearch_m");
+          $('<button class="button" style="display:none;" data-sharer="twitter" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
+          $('<button class="button" style="display:none;" data-sharer="linkedin" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
 
+          window.Sharer.init();
+            $("<a facebook style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/facebook-share-icon.png' /></a>").appendTo($act);
+            $act.find("[facebook]").bind("click", function() {
               FB.ui({
                   method: 'share',
                   href: "https://goat100.com/share.php?id=" + cid + "&artsearch=" + $(ths).closest(".gallery-item").attr("artsearch_m"),
               }, function(response){});
             });
+            $("<a twitter style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/twitter-share-icon.png' /></a>").appendTo($act);
+              $act.find("[twitter]").bind("click", function(e) {
+              $act.find("[data-sharer='twitter']").trigger("click");
+            });
+
+            $("<a linkedin style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/linkedn-share-icon.png' /></a>").appendTo($act);
+              $act.find("[linkedin]").bind("click", function(e) {
+              $act.find("[data-sharer='linkedin']").trigger("click");
+            });
         }
-        $act.find("a").eq(1).bind("click", function() {
+        $act.find("a").eq(0).bind("click", function() {
           vote("Like", cid, artName, 1);
         });
-        $act.find("a").eq(2).bind("click", function() {
+        $act.find("a").eq(1).bind("click", function() {
           vote("UnLike", cid, artName, -1)
         });
         $("div[id='disqus_thread']").remove();
@@ -529,7 +565,7 @@ function draw() {
           var ww = setInterval(function() {
             if ($(".back-btn").length > 0) {
               clearInterval(ww);
-              $(".back-btn").attr("onclick", " $('[facebook]').remove();history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');");
+              $(".back-btn").attr("onclick", " $('[linkedin]').remove();$('[twitter]').remove();$('[facebook]').remove();history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');");
 
             }
           }, 100)
@@ -551,6 +587,7 @@ function draw() {
   </script>
   <!--<script type="text/javascript" src="cordova.js"></script>-->
   <script src="http://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
+
   <script src="js/color-thief.min.js"></script>
   <script src="js/galleryExpand.js"></script>
   <script>

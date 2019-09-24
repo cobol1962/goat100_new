@@ -1,33 +1,30 @@
-function ReconnectingWebSocket(url,user,session, protocols) {
-    protocols = protocols || [];
+function ReconnectingWebSocket(custid,card) {
+    protocols = [];
 
     // These can be altered by calling code.
     this.debug = false;
     this.reconnectInterval = 1000;
     this.timeoutInterval = 5000;
     this.redirectInterval = null;
-	this.uid = localStorage.uid;
-    var self = this;
+	  var self = this;
     var ws;
     var forcedClose = false;
     var timedOut = false;
-	this.user = user;
-    this.url = url;
+    var url = "";
     this.protocols = protocols;
     this.readyState = WebSocket.CONNECTING;
-    this.URL = url; // Public API
-	this.refreshUserTimeout = null;
+    this.refreshUserTimeout = null;
     this.onopen = function () {
-	
+
         var reconnect = false;
         if (url.indexOf("?reconnect=") > -1) {
             reconnect = true;
         }
-        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "invastor.com:8080" + (location.port ? ':' + location.port : '') + '?user=' + user + "&session=" + "1";
+        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444" + (location.port ? ':' + location.port : '') + '?custid=' + custid + "&card=" + card;
         if (!reconnect) {
-			
+
 	    } else {
-         
+
           //  end_reconnect();
         }
     }
@@ -35,38 +32,31 @@ function ReconnectingWebSocket(url,user,session, protocols) {
 
     this.onclose = function (e) {
 		//ws.send("remove#" + localStorage.uid );
-		
+
     };
 
     this.onconnecting = function (e) {
     };
 
     this.onmessage = function (e) {
-	
-		var obj = $.parseJSON(e.data);
-		
+
+		    // alert(e.data);
+
     };
-	
+
     this.onerror = function (e) {
-		
+
     };
-	function refreshUsers(data) {
-		try {
-			refreshChatOnlineUsers(data);
-		} catch(err) {
-		}
-	
-		
-	}
+
     function connect(reconnectAttempt, reconnect) {
-	
+
         if (reconnect) {
             if (url.indexOf("&reconnect=yes") == -1) {
                 url += "&reconnect=yes";
             }
 
         } else {
-            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "invastor.com:8080" + (location.port ? ':' + location.port : '') + '?user=' + user + "&session=" + "1";
+            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444" + (location.port ? ':' + location.port : '') + '?custid=' +custid + "&card=" + card;
         }
         ws = new WebSocket(url, this.protocols);
 
@@ -78,7 +68,7 @@ function ReconnectingWebSocket(url,user,session, protocols) {
                 timedOut = true;
                 localWs.close();
                 timedOut = false;
-                clearInterval(timeout); 
+                clearInterval(timeout);
             } catch (Error) {
 
             }
@@ -122,7 +112,7 @@ function ReconnectingWebSocket(url,user,session, protocols) {
     connect(url, false);
 
     this.send = function (data) {
-       
+
         if (ws) {
             return ws.send(data);
             return true;
@@ -137,7 +127,7 @@ function ReconnectingWebSocket(url,user,session, protocols) {
         }
     };
     this.close = function () {
-		
+
         forcedClose = true;
         if (ws) {
             console.log('ws close');
@@ -146,10 +136,10 @@ function ReconnectingWebSocket(url,user,session, protocols) {
     };
 
     this.logout = function () {
-		
+
         if (self.redirectInterval != null) {
-            
-           
+
+
         }
         clearInterval(self.redirectInterval);
     };
