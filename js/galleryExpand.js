@@ -91,7 +91,7 @@
         }
 
         // Setup fillScreen.
-        
+
         var gradient = $object.find('.gradient').first();
         if (fillScreen) {
           if (!gradient.length) {
@@ -99,9 +99,9 @@
             $object.append(gradient);
           }
           origin.attr('data-fillscreen', true);
-      
-          
-         
+
+
+
         }
 
         var resetSelectors = function() {
@@ -111,7 +111,7 @@
           $body = origin.find('.gallery-body');
           $action = origin.find('.gallery-action');
           placeholder = origin.find('.placeholder');
-      
+
         };
 
         var setOrigDimensions = function() {
@@ -125,7 +125,7 @@
           origObjectHeight = $object.height();
           origObjectRect = $object.length ? $object[0].getBoundingClientRect() : {top: origHeaderRect.top, left: 0};
           origScrollTop = $(window).scrollTop();
-        
+
         };
 
         origin.off('click.galleryExpand').on('click.galleryExpand', function(e) {
@@ -193,7 +193,7 @@
             if (fullWidth) {
               newCardWidth = windowWidth;
               cardPadding = 0;
-             
+
             }
 
             // Recalculate some vars if object needs to be resized.
@@ -319,7 +319,7 @@
             .off('click.galleryExpand')
             .on('click.galleryExpand', function() {
               returnToOriginal();
-            
+
             })
           if (fillScreen) {
             overlay
@@ -353,7 +353,7 @@
           placeholder.prepend(navbar);
           backBtn.click(function() {
             returnToOriginal();
-            
+
           });
 
           // Color sample
@@ -397,8 +397,8 @@
 
           }
 
-     
-   
+
+
 
           // If color thief fails to set primaryColor
           primaryColor = primaryColor || options.defaultColor;
@@ -479,7 +479,7 @@
 
             if (!fillScreen && $object.length) {
               if (fullWidth) {
-                
+
                 $body.find('.title-wrapper').css({
                   marginTop: contentOffsetTop / 2
                 });
@@ -590,22 +590,22 @@
 
           }, inDuration);
 
-          
+
 
         });
 
-       
 
-         
 
-        
+
+
+
 
         // Return on ESC
         $(document).keyup(function(e) {
           if (e.keyCode === 27) {   // ESC key
             if (overlayActive) {
               returnToOriginal();
-              
+
             }
           }
         });
@@ -613,11 +613,11 @@
 
         // This function returns the modaled image to the original spot
         function returnToOriginal() {
-         
-         
-    
 
-          
+
+
+
+
           // Only Call Once
           if (!returnClickable) {
             return;
@@ -665,7 +665,7 @@
 
           // Show header.
           $header.show();
-          
+
           setTimeout(function() {
 
             // Off resize event.
@@ -673,7 +673,7 @@
 
             // Fade out child elements
             origin.find('.gallery-body').css('display', 'none');
-            
+
             if ($action) {
               $action.find(btnSelector).removeClass('active');
             }
@@ -773,7 +773,7 @@
             }, outDuration);
 
           }, 0);
-        
+
 
         }
 

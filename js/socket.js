@@ -1,32 +1,33 @@
-function ReconnectingWebSocket(custid,card) {
-    protocols = [];
+var customerSession = null;
 
-    // These can be altered by calling code.
+var ws = null;
+
+function ReconnectingWebSocket() {
+    var u = $.parseJSON(localStorage.user);
+    var url = "5.230.195.150:4444/?custid=" + u.id;
+
     this.debug = false;
     this.reconnectInterval = 1000;
     this.timeoutInterval = 5000;
     this.redirectInterval = null;
-	  var self = this;
+	this.uid = localStorage.uid;
+    var self = this;
     var ws;
     var forcedClose = false;
     var timedOut = false;
-    var url = "";
-    this.protocols = protocols;
+    this.url = url;
     this.readyState = WebSocket.CONNECTING;
-    this.refreshUserTimeout = null;
+    this.URL = url; // Public API
+	   this.refreshUserTimeout = null;
+
     this.onopen = function () {
 
         var reconnect = false;
         if (url.indexOf("?reconnect=") > -1) {
             reconnect = true;
         }
-        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444" + (location.port ? ':' + location.port : '') + '?custid=' + custid + "&card=" + card;
-        if (!reconnect) {
+        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444/?custid=" + u.id;
 
-	    } else {
-
-          //  end_reconnect();
-        }
     }
 
 
@@ -40,9 +41,32 @@ function ReconnectingWebSocket(custid,card) {
 
     this.onmessage = function (e) {
 
-		    // alert(e.data);
+      var obj = $.parseJSON(e.data);
+      if (obj.response == "newMessage") {
 
+        if ($("#chatDiv").is(":visible") && $("#chatDiv").attr("cardid") == obj.cardid) {
+          var options = {
+              year: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              month: "2-digit",
+              day: "numeric"
+          };
+        
+          var $dv = $("#chatMessageMaster").clone();
+          $dv.attr("clone", "1");
+          $(".chatMessages").append($dv);
+          var usr = $.parseJSON(obj.user);
+          $dv.find("[avatar]").attr("src", usr.avatar);
+          var dt = new Date();
+          $dv.find("[sender]").html(usr.nick + "<br />" + dt.toLocaleDateString("en", options));
+          $dv.find("[message]").html(atob(obj.message));
+          $dv.show();
+          $(".chatMessages").scrollTop($(".chatMessages")[0].scrollHeight);
+        }
+      }
     };
+
 
     this.onerror = function (e) {
 
@@ -52,11 +76,11 @@ function ReconnectingWebSocket(custid,card) {
 
         if (reconnect) {
             if (url.indexOf("&reconnect=yes") == -1) {
-                url += "&reconnect=yes";
+
             }
 
         } else {
-            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444" + (location.port ? ':' + location.port : '') + '?custid=' +custid + "&card=" + card;
+            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444/?custid=" + u.id;
         }
         ws = new WebSocket(url, this.protocols);
 
@@ -104,7 +128,7 @@ function ReconnectingWebSocket(custid,card) {
             self.onmessage(event);
         };
         ws.onerror = function (event) {
-			console.log(event);
+
             clearInterval(self.redirectInterval);
             self.redirectInterval = null;
         };
@@ -138,8 +162,6 @@ function ReconnectingWebSocket(custid,card) {
     this.logout = function () {
 
         if (self.redirectInterval != null) {
-
-
         }
         clearInterval(self.redirectInterval);
     };

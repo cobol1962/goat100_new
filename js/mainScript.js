@@ -387,6 +387,7 @@ function loginUser(res) {
 
 	$("#loginModal").modal("close");
 	localStorage["user"] = JSON.stringify(res);
+  localStorage.customer_id = res.id;
 	$("[profile]").find("span").html(res.nick);
 	$("#inputNick").val(res.nick);
 	$("#FirstLastName").val(res.FirstlastName);
@@ -603,6 +604,7 @@ function goVote(what, cardid, artName, addVote, userid) {
                   title: "Thank you",
                   html: "<h5>You succesfully <b>" + ((addVote == 1) ? "Liked" : "Unliked") + "</b> " + artName + "</h5>"
                 })
+                window.location.reload();
               }
             });
           }
@@ -624,6 +626,30 @@ function askRegister() {
       $("#register").trigger("click");
     } else {
       $("#login").trigger("click");
+    }
+  })
+
+}
+function sendChatMessage() {
+  var u = $.parseJSON(localStorage.user);
+  var obj = {
+    cardid: $("#chatDiv").attr("cardid"),
+    userid: u.id,
+    user: localStorage.user,
+    message: btoa($("#message").val().replace(/\r?\n/g, '<br />'))
+  };
+
+  $.ajax({
+    url: "/ajax/sendMessage.php",
+    type: "POST",
+    dataType: "json",
+    data: obj,
+    success: function(res) {
+      if (res.status == "ok") {
+        obj.action = "message";
+        ws.send(JSON.stringify(obj));
+      }
+
     }
   })
 

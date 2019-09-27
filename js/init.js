@@ -7,6 +7,7 @@
 	}); // end of document ready
 })(jQuery); // end of jQuery name space
 function initializeGallery(hash) {
+		$(".count").remove();
 	$(".button-collapse").sideNav();
 	var categories = $('nav .categories-container');
 	if (categories.length) {
@@ -43,6 +44,8 @@ function initializeGallery(hash) {
 			});
 		});
 	}
+	var $galleryItems = $('.gallery .gallery-item');
+
 
 
 	// Home
@@ -73,11 +76,26 @@ function initializeGallery(hash) {
 	// layout Masonry after each image loads
 	$masonry.imagesLoaded(function() {
 		$masonry.masonry('layout');
+
 	});
+
 	$('a.filter').click(function (e) {
 		e.preventDefault();
 	});
+	setTimeout(function() {
+		var rb = 1;
 
+		$.each($galleryItems, function(i) {
+			if ($(this).is(":visible")) {
+				if ($(this).find(".gallery-name").find(".count").length == 0) {
+					$(this).find(".gallery-name").append($('<span class="btn-floating btn-large waves-effect waves-light count">' + rb + '</span>'));
+				}
+				$(this).find(".gallery-name").find(".count").html(rb);
+				$(this).attr("order", rb);
+				rb++;
+			}
+		})
+	}, 2000);
 
 
 	// Contact Form Icon
