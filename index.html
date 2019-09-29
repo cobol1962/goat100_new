@@ -38,11 +38,17 @@
  <script src="js/imagesloaded.pkgd.min.js"></script>
  <script src="js/masonry.pkgd.min.js"></script>
   <script src="js/socket.js?v=10"></script>
+  <script src="js/popover.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.js" integrity="sha256-9LeEGfQ5kyFt9Jn2EfwXqdBII40MS8iOC2YRF4T/T14=" crossorigin="anonymous"></script>
  <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
     <!-- Lato Font -->
 <style>
-	.demo-list-three {
+  .popover-title { display: none; }
+  .popover.top {
+      margin-top: -31px; //or any value that you want
+  }
+  .demo-list-three {
 		width: 77%;
 		text-indent: -1.9em;
 		padding-left: 51px!important;
@@ -94,9 +100,7 @@
   </head>
 
   <body class="blue-grey darken-4">
-
     <!-- Navbar and Avatar -->
-
     <nav class="nav-extended nav-full-Avatar z-depth-0 blue-grey darken-3">
 	 <div class="nav-background">
 		<div class="active"  id='bg'>
@@ -384,9 +388,8 @@ function locationHashChanged() {
         if ($(".back-btn").length > 0) {
           clearInterval(ww);
           $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');");
-          $("[facebook]").remove();
-          $('[linkedin]').remove();
-          $('[twitter]').remove();
+          $('[share]').popover('hide');
+          $("[share]").remove();
           $("#chatDiv").hide();
 
         }
@@ -395,10 +398,9 @@ function locationHashChanged() {
   } else {
     $(".back-btn").trigger("click");
     $("#chatDiv").hide();
-    $("[facebook]").remove();
-    $('[linkedin]').remove();
-    $('[twitter]').remove();
-      $("#chatDiv").hide();
+    $('[share]').popover('hide');
+    $("[share]").remove();
+    $("#chatDiv").hide();
 
   }
 }
@@ -527,6 +529,7 @@ function draw() {
       dv.innerHTML = this;
 
       var ths = this;
+
       $.each($(dv).find("iframe"), function() {
         var toAdd = this.outerHTML;
         if ($(this).attr("src").indexOf("apple") > -1) {
@@ -542,7 +545,24 @@ function draw() {
               $(toAdd).appendTo($(this).find(".collapsible-body"));
             });
         }
-      })
+
+      });
+      $.each($(dv).find("[spotify]"), function() {
+        var ths = this;
+        var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+        $(lis[1]).one("click", function() {
+          $("<iframe src='" + $(ths).html() + "' width='100%' frame-ancestors='none' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>").appendTo($(this).find(".collapsible-body"));
+        });
+      });
+      $.each($(dv).find("[apple]"), function() {
+        var ths = this;
+        var lis = $(dv)[0].querySelectorAll(".collapsible > li");
+        $(lis[2]).one("click", function() {
+
+          $("<iframe src='" + $(ths).html() + "' width='100%' allow='autoplay *; encrypted-media *;' frameborder='0' height='450' sandbox='allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation'></iframe>").appendTo($(this).find(".collapsible-body"));
+        });
+      });
+
       $(dv).find("iframe").remove();
     //  document.getElementById("rows").appendChild(dv);
 
@@ -580,7 +600,7 @@ function draw() {
         var ww = setInterval(function() {
           if ($(".back-btn").length > 0) {
             clearInterval(ww);
-            $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');$('#chatDiv').hide();$('[linkedin]').remove();$('[facebook]').remove();$('[twitter]').remove();");
+            $(".back-btn").attr("onclick", "history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');$('#chatDiv').hide();$('[linkedin]').remove();$('[share]').popover('hide');$('[share]').remove();$('[twitter]').remove();");
             $('title').text("GOAT100 - " + artName);
           }
         }, 100);
@@ -629,31 +649,24 @@ function draw() {
         $act.find("a").eq(1).unbind("click");
         var ths = this;
         var dsc = escape($(ths).closest(".gallery-item").find(".description").text());
-        var ttl =  artName;
-        if ($act.find("[facebook]").length == 0) {
+        var ttl =  artName
+
+        if ($act.find("[share]").length == 0) {
 
           var url = "https://goat100.com/share.php?id=" + cid + "&artsearch=" + $(ths).closest(".gallery-item").attr("artsearch_m");
           var title = "GOAT00 - " + $(ths).closest(".gallery-item").attr("artsearch_m");
-          $('<button class="button" style="display:none;" data-sharer="twitter" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
-          $('<button class="button" style="display:none;" data-sharer="linkedin" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
-
+          $('<button class="button" id="twitter_share_' + cid + '" style="display:none;" data-sharer="twitter" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
+          $('<button id="linkedin_share_' + cid + '" class="button" style="display:none;" data-sharer="linkedin" data-width="800" data-height="600" data-title=' + title + ' data-url=' + url + '>Share</button>').appendTo($act);
           window.Sharer.init();
-            $("<a facebook style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/facebook-share-icon.png' /></a>").appendTo($act);
-            $act.find("[facebook]").bind("click", function() {
-              FB.ui({
-                  method: 'share',
-                  href: "https://goat100.com/share.php?id=" + cid + "&artsearch=" + $(ths).closest(".gallery-item").attr("artsearch_m"),
-              }, function(response){});
-            });
-            $("<a twitter style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/twitter-share-icon.png' /></a>").appendTo($act);
-              $act.find("[twitter]").bind("click", function(e) {
-              $act.find("[data-sharer='twitter']").trigger("click");
-            });
-
-            $("<a linkedin style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/linkedn-share-icon.png' /></a>").appendTo($act);
-              $act.find("[linkedin]").bind("click", function(e) {
-              $act.find("[data-sharer='linkedin']").trigger("click");
-            });
+          var am = $(this).closest(".gallery-item").attr("artsearch_m");
+          var $dv = $(document.createElement("DIV"));
+            $("<a facebook onclick=fireShare('facebook'," + cid + ",'" + am + "') style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/facebook-share-icon.png' /></a>").appendTo($dv);
+            $("<a twitter onclick=fireShare('twitter'," + cid + ",'" + am + "') style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/twitter-share-icon.png' /></a>").appendTo($dv);
+            $("<a linkedin onclick=fireShare('linkedin'," + cid + ",'" + am + "') style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/linkedn-share-icon.png' /></a>").appendTo($dv);
+            $("<a share data-placement='top' data-html='true' data-container='body' data-content='' rel='popover' style='cursor:pointer;'><img style='width:56px;margin-left: 10px;' src='/images/icon-share.png' /></a>").appendTo($act);
+            $act.find("[share]").attr("data-content", $dv[0].outerHTML);
+            $act.find("[share]").popover();
+            
         }
         $act.find("a").eq(0).bind("click", function() {
           vote("Like", cid, artName, 1);
@@ -688,7 +701,7 @@ function draw() {
           var ww = setInterval(function() {
             if ($(".back-btn").length > 0) {
               clearInterval(ww);
-              $(".back-btn").attr("onclick", "$('#chatDiv').hide();$('[linkedin]').remove();$('[twitter]').remove();$('[facebook]').remove();history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');");
+              $(".back-btn").attr("onclick", "$('#chatDiv').hide();$('[linkedin]').remove();$('[twitter]').remove();$('[share]'').popover('hide');$('[share]').remove();history.pushState({}, 'goat100','/');$('title').text('GOAT100 - Gratest Of All Time 100');");
 
             }
           }, 100)
@@ -708,7 +721,17 @@ function draw() {
       initialzeSearch();
     }, 2000)
 	}
+  function fireShare(media, cid, artsearch) {
+    if (media == "facebook") {
+      FB.ui({
+          method: 'share',
+          href: "https://goat100.com/share.php?id=" + cid + "&artsearch=" + artsearch,
+      }, function(response){});
+      return
+    }
 
+    $("#" + media + "_share_" + cid).trigger("click");
+  }
   </script>
   <!--<script type="text/javascript" src="cordova.js"></script>-->
   <script src="http://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
