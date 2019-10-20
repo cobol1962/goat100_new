@@ -117,9 +117,12 @@ function initializeGallery(hash) {
 		$.each(el.find('.carousel.initialized').find("img"), function() {
 			$(this).closest("a").attr("href", $(this).attr("src"));
 		});
-		el.find('.carousel.initialized').lightGallery({
+		var $lg = el.find('.carousel.initialized').lightGallery({
 	 		thumbnail: true,
  		});
+		$lg.on('onBeforeOpen.lg',function(event){
+    	alert('onBeforeOpen');
+		});
 	};
 	$('.gallery-expand').galleryExpand({
 		onShow: onShow
