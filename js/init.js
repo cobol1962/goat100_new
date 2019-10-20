@@ -129,7 +129,11 @@ function initializeGallery(hash) {
 		});
 	};
 	$('.gallery-expand').galleryExpand({
-		onShow: onShow
+		onShow: onShow,
+		onHode: function() {
+			alert(">")
+			$("#chatDiv").hide();
+		}
 	});
 
 	$('.blog .gallery-expand').galleryExpand({
