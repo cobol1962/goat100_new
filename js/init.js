@@ -119,11 +119,12 @@ function initializeGallery(hash) {
 		var $lg = el.find('.carousel.initialized').lightGallery({
 	 		thumbnail: true,
  		});
-		$lg.on('onAfterOpen.lg',function(event){
-    	alert('onBeforeOpen');
+		$lg.on('onAfterOpen.lg',function(event) {
+			alert("?")
+    	$("#chatDiv").hide();
 		});
-		$lg.on('onAfterClose.lg',function(event){
-			alert('onBeforeOpen');
+		$lg.on('onCloseAfter.lg',function(event){
+			$("#chatDiv").show();
 		});
 	};
 	$('.gallery-expand').galleryExpand({
