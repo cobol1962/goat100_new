@@ -123,14 +123,18 @@ function initializeGallery(hash) {
 		$lg.on('onAfterOpen.lg',function(event) {
 			$("#lg-share").hide();
 	   	$("#chatDiv").hide();
+			$("#lg-zoom-in").trigger("click");
 		});
 		$lg.on('onCloseAfter.lg',function(event){
 			$("#chatDiv").show();
 		});
+		$lg.on('onAfterSlide.lg',function(event, index, fromTouch, fromThumb){
+    		$("#lg-zoom-in").trigger("click");
+		});
 	};
 	$('.gallery-expand').galleryExpand({
 		onShow: onShow,
-		onHode: function() {
+		onHide: function() {
 			alert(">")
 			$("#chatDiv").hide();
 		}
