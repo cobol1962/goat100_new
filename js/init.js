@@ -108,6 +108,7 @@ function initializeGallery(hash) {
 
 
 	var onShow = function(el) {
+		alert("?/??");
 		var carousel = el.find('.carousel.initialized');
 		carousel.carousel({
 			dist: 0,
