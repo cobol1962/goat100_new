@@ -116,15 +116,12 @@ function initializeGallery(hash) {
 		$("#lg-share").hide();
 		$.each(el.find('.carousel.initialized').find("img"), function() {
 			$(this).closest("a").attr("href", $(this).attr("src"));
-			$(this).css({
-				width: "50%",
-				height: "auto"
-			})
 		});
 		var $lg = el.find('.carousel.initialized').lightGallery({
 	 		thumbnail: true,
  		});
 		$lg.on('onAfterOpen.lg',function(event) {
+			$("#lg-share").hide();
 	   	$("#chatDiv").hide();
 		});
 		$lg.on('onCloseAfter.lg',function(event){
