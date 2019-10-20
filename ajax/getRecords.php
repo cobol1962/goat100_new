@@ -13,10 +13,10 @@
                     . $row["html"] . "
                   </div>";
 						if ($row["spotify"] != "") {
-							$rz .= "<span spotify>" . $row["spotify"] . "</span>";
+							$rz .= "<span  spotify>" . $row["spotify"] . "</span>";
 						}
 						if ($row["apple"] != "") {
-							$rz .= "<span apple>" . $row["apple"] . "</span>";
+							$rz .= "<span  apple>" . $row["apple"] . "</span>";
 						}
             $rz .= "</div><!--endartist-->";
       $i++;

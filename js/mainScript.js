@@ -8,6 +8,31 @@ setTimeout(function() {
     messagingSenderId: "211978863857"
   };
   firebase.initializeApp(config);
+  const messaging = firebase.messaging();
+//  messaging.usePublicVapidKey('BIoky-q98fgqT3uxG5MkPTyqTwLB6bGFS2wAFY0BiTNfnpvdyOuVERJm4SCAh4JQDe_dytEEJhYdeAxYYa9zGJE');
+  messaging.requestPermission()
+  .then(function() {
+    console.log("Has permissions");
+    return messaging.getToken();
+  })
+  .then(function(token) {
+
+    $.ajax({
+      url: "https://gastronomskocarstvo.com:4444",
+      type: "POST",
+      data: JSON.stringify({ action: "registerToken", token : token}),
+      success: function(res) {
+
+      }
+    })
+  })
+  .catch(function(err) {
+    console.log(err);
+  })
+  messaging.onMessage(function(payload) {
+    console.log("message " + payload);
+  //  alert(payload.body)
+  })
 }, 5000);
 
 $(document).ready(function(){
@@ -19,11 +44,7 @@ $(document).ready(function(){
   startAvatar();
 
 });
-  // Initialize Firebase
-
 function checkGGlogin(response) {
-
-	console.log(response);
    $.ajax({
 		url: "/ajax/loginGG.php",
 		type: "POST",
@@ -35,7 +56,7 @@ function checkGGlogin(response) {
 				$.ajax({
 					url:"/ajax/getTranslation.php",
 					type: "POST",
-					data: { term: "Google account does not exist in InVastor"},
+					data: { term: "Google account does not exist in GOAT100"},
 					success:function(res) {
 						swal({
 							type: "error",

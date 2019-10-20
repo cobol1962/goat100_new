@@ -4,7 +4,7 @@ var ws = null;
 
 function ReconnectingWebSocket() {
     var u = $.parseJSON(localStorage.user);
-    var url = "5.230.195.150:4444/?custid=" + u.id;
+    var url = "gastronomskocarstvo.com:4444/?custid=" + u.id;
 
     this.debug = false;
     this.reconnectInterval = 1000;
@@ -26,7 +26,7 @@ function ReconnectingWebSocket() {
         if (url.indexOf("?reconnect=") > -1) {
             reconnect = true;
         }
-        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444/?custid=" + u.id;
+        url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "gastronomskocarstvo.com:4444/?custid=" + u.id;
 
     }
 
@@ -52,7 +52,7 @@ function ReconnectingWebSocket() {
               month: "2-digit",
               day: "numeric"
           };
-        
+
           var $dv = $("#chatMessageMaster").clone();
           $dv.attr("clone", "1");
           $(".chatMessages").append($dv);
@@ -80,7 +80,7 @@ function ReconnectingWebSocket() {
             }
 
         } else {
-            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "5.230.195.150:4444/?custid=" + u.id;
+            url = ('https:' == document.location.protocol ? 'wss://' : 'ws://') + "gastronomskocarstvo.com:4444/?custid=" + u.id;
         }
         ws = new WebSocket(url, this.protocols);
 

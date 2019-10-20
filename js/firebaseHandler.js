@@ -21,7 +21,6 @@ function authentificate(pid, callback) {
 
     }).catch(function(error) {
         // Handle Errors here.
-      alert(JSON.stringify(error));
         var errorCode = error.code;
         var errorMessage = error.message;
         var email = error.email;
