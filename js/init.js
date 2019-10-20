@@ -108,7 +108,6 @@ function initializeGallery(hash) {
 
 
 	var onShow = function(el) {
-		alert("?/??");
 		var carousel = el.find('.carousel.initialized');
 		carousel.carousel({
 			dist: 0,
@@ -120,8 +119,11 @@ function initializeGallery(hash) {
 		var $lg = el.find('.carousel.initialized').lightGallery({
 	 		thumbnail: true,
  		});
-		$lg.on('onBeforeOpen.lg',function(event){
+		$lg.on('onAfterOpen.lg',function(event){
     	alert('onBeforeOpen');
+		});
+		$lg.on('onAfterClose.lg',function(event){
+			alert('onBeforeOpen');
 		});
 	};
 	$('.gallery-expand').galleryExpand({
